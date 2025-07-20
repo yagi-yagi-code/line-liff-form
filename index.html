@@ -9,7 +9,7 @@
 <body style="text-align:center; margin-top: 3em; font-family: sans-serif;">
   <h2>LINE ID 取得中...</h2>
   <p id="status">読み込み中...</p>
-  <div id="button-area" style="margin-top:2em;"></div>
+  <div id="link-area" style="margin-top:2em;"></div>
 
   <script>
     async function main() {
@@ -18,24 +18,22 @@
         await liff.init({ liffId: "2007783477-4L19A7vA" });
 
         if (!liff.isLoggedIn()) {
-          document.getElementById("status").innerText = "LINEログイン中...";
           liff.login();
           return;
         }
 
         const profile = await liff.getProfile();
         const userId = profile.userId;
-        document.getElementById("status").innerText = "取得したLINE ID:\n" + userId;
 
-        // GoogleフォームのプリフィルURLを生成
+        document.getElementById("status").innerText = `取得したLINE ID: ${userId}`;
+
         const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc3nBZNBihvIxVSnIdXq7drGYbrPE8_iXGEw_Cid44LGBch8w/viewform?entry.1676225284=" + encodeURIComponent(userId);
 
-        // ユーザーが押せるボタンを表示
-        document.getElementById("button-area").innerHTML = `
-          <button onclick="window.location.href='${formUrl}'"
-            style="padding: 1em 2em; font-size: 1.2em; background-color: #06C755; color: white; border: none; border-radius: 10px;">
-            Googleフォームに進む
-          </button>
+        // HTMLのaタグとして表示（LINEブラウザでも確実に動作）
+        document.getElementById("link-area").innerHTML = `
+          <a href="${formUrl}" style="display:inline-block; margin-top:1em; font-size:1.2em; padding: 1em 2em; background-color:#06C755; color:white; border-radius:8px; text-decoration:none;">
+            フォームに進む
+          </a>
         `;
       } catch (err) {
         document.getElementById("status").innerHTML = `<span style="color:red;">❌ エラー: ${err}</span>`;
