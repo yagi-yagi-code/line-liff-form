@@ -2,37 +2,49 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>LINEログイン中...</title>
+  <title>LINEフォーム連携</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
-  <p style="text-align:center; margin-top: 2em;">Googleフォームに移動しています...</p>
+  <div id="log" style="text-align:center; margin-top:2em;">初期化中...</div>
+  <div id="next" style="text-align:center; margin-top:1.5em;"></div>
 
   <script>
     async function main() {
-      await liff.init({ liffId: "2007783477-4L19A7vA" });
+      try {
+        document.getElementById("log").innerText = "LIFFを初期化中...";
+        await liff.init({ liffId: "2007783477-4L19A7vA" });
 
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
+        if (!liff.isLoggedIn()) {
+          document.getElementById("log").innerText = "LINEログイン中...";
+          liff.login();
+          return;
+        }
+
+        document.getElementById("log").innerText = "LINEプロフィール取得中...";
+        const profile = await liff.getProfile();
+        const userId = profile.userId;
+
+        document.getElementById("log").innerText = `取得したLINE ID:\n${userId}`;
+
+        const formBaseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc3nBZNBihvIxVSnIdXq7drGYbrPE8_iXGEw_Cid44LGBch8w/viewform";
+        const entryId = "entry.1676225284";
+        const formUrl = `${formBaseUrl}?${entryId}=${encodeURIComponent(userId)}`;
+
+        // ボタンで遷移
+        document.getElementById("next").innerHTML = `
+          <button onclick="location.href='${formUrl}'"
+            style="padding: 1em 2em; font-size: 1.1em; margin-top: 1em; border-radius: 10px; background: #06C755; color: white; border: none;">
+            フォームに進む
+          </button>
+        `;
+      } catch (err) {
+        document.getElementById("log").innerHTML = `<span style="color:red;">❌ エラー: ${err}</span>`;
       }
-
-      const profile = await liff.getProfile();
-      const userId = profile.userId;
-
-      // GoogleフォームのURLとentry ID
-      const formBaseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc3nBZNBihvIxVSnIdXq7drGYbrPE8_iXGEw_Cid44LGBch8w/viewform";
-      const entryId = "entry.1676225284"; // LINE ID欄のentry ID
-      const formUrl = `${formBaseUrl}?${entryId}=${encodeURIComponent(userId)}`;
-
-      // フォームに遷移
-      location.href = formUrl;
     }
 
-    main().catch(err => {
-      document.body.innerHTML += `<p style="color:red;">エラーが発生しました：${err}</p>`;
-    });
+    main();
   </script>
 </body>
 </html>
