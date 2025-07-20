@@ -2,40 +2,38 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>LINEログイン中...</title>
+  <title>LINEログインテスト</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
-  <p id="status" style="text-align:center; margin-top: 2em;">LINE IDを取得中...</p>
+  <h2 style="text-align:center; margin-top: 2em;">LINE ID 取得テスト</h2>
+  <div id="result" style="text-align:center; font-size: 1.2em; margin-top: 1em;">読み込み中...</div>
 
   <script>
     async function main() {
-      await liff.init({ liffId: "2007783477-4L19A7vA" });
+      try {
+        await liff.init({ liffId: "2007783477-4L19A7vA" });
 
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+
+        const profile = await liff.getProfile();
+        const userId = profile.userId;
+        const displayName = profile.displayName;
+
+        // 表示する（確認用）
+        document.getElementById('result').innerHTML =
+          `<p>✅ LINE ID: <code>${userId}</code></p>
+           <p>🧑‍🦱 表示名: <strong>${displayName}</strong></p>`;
+      } catch (e) {
+        document.getElementById('result').innerHTML = `<p style="color:red;">❌ エラー: ${e}</p>`;
       }
-
-      const profile = await liff.getProfile();
-      const userId = profile.userId;
-
-      // デバッグ用：画面に表示
-      document.getElementById('status').innerText = "取得したLINE ID: " + userId;
-
-      // フォーム遷移（コメントアウトして一時停止）
-      /*
-      const formBaseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc3nBZNBihvIxVSnIdXq7drGYbrPE8_iXGEw_Cid44LGBch8w/viewform";
-      const entryId = "entry.1676225284";
-      const formUrl = `${formBaseUrl}?${entryId}=${encodeURIComponent(userId)}`;
-      location.href = formUrl;
-      */
     }
 
-    main().catch(err => {
-      document.getElementById('status').innerText = "エラー: " + err;
-    });
+    main();
   </script>
 </body>
 </html>
