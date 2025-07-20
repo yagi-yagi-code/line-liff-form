@@ -6,41 +6,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
-<body>
-  <div id="log" style="text-align:center; margin-top:2em;">初期化中...</div>
-  <div id="next" style="text-align:center; margin-top:1.5em;"></div>
+<body style="text-align:center; margin-top: 3em; font-family: sans-serif;">
+  <h2>LINE ID 取得中...</h2>
+  <p id="status">読み込み中...</p>
+  <div id="button-area" style="margin-top:2em;"></div>
 
   <script>
     async function main() {
       try {
-        document.getElementById("log").innerText = "LIFFを初期化中...";
+        document.getElementById("status").innerText = "LIFF初期化中...";
         await liff.init({ liffId: "2007783477-4L19A7vA" });
 
         if (!liff.isLoggedIn()) {
-          document.getElementById("log").innerText = "LINEログイン中...";
+          document.getElementById("status").innerText = "LINEログイン中...";
           liff.login();
           return;
         }
 
-        document.getElementById("log").innerText = "LINEプロフィール取得中...";
         const profile = await liff.getProfile();
         const userId = profile.userId;
+        document.getElementById("status").innerText = "取得したLINE ID:\n" + userId;
 
-        document.getElementById("log").innerText = `取得したLINE ID:\n${userId}`;
+        // GoogleフォームのプリフィルURLを生成
+        const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc3nBZNBihvIxVSnIdXq7drGYbrPE8_iXGEw_Cid44LGBch8w/viewform?entry.1676225284=" + encodeURIComponent(userId);
 
-        const formBaseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc3nBZNBihvIxVSnIdXq7drGYbrPE8_iXGEw_Cid44LGBch8w/viewform";
-        const entryId = "entry.1676225284";
-        const formUrl = `${formBaseUrl}?${entryId}=${encodeURIComponent(userId)}`;
-
-        // ボタンで遷移
-        document.getElementById("next").innerHTML = `
-          <button onclick="location.href='${formUrl}'"
-            style="padding: 1em 2em; font-size: 1.1em; margin-top: 1em; border-radius: 10px; background: #06C755; color: white; border: none;">
-            フォームに進む
+        // ユーザーが押せるボタンを表示
+        document.getElementById("button-area").innerHTML = `
+          <button onclick="window.location.href='${formUrl}'"
+            style="padding: 1em 2em; font-size: 1.2em; background-color: #06C755; color: white; border: none; border-radius: 10px;">
+            Googleフォームに進む
           </button>
         `;
       } catch (err) {
-        document.getElementById("log").innerHTML = `<span style="color:red;">❌ エラー: ${err}</span>`;
+        document.getElementById("status").innerHTML = `<span style="color:red;">❌ エラー: ${err}</span>`;
       }
     }
 
