@@ -7,75 +7,34 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
-  <p style="text-align:center; margin-top: 2em;">Googleフォームに移動しています...</p>
+  <p id="status" style="text-align:center; margin-top: 2em;">LINE IDを取得中...</p>
 
   <script>
     async function main() {
-      // あなたのLIFF IDで初期化（このIDは既に確認済）
       await liff.init({ liffId: "2007783477-4L19A7vA" });
 
-      // ログインしていなければログイン
       if (!liff.isLoggedIn()) {
         liff.login();
         return;
       }
 
-      // ユーザープロフィール取得
       const profile = await liff.getProfile();
       const userId = profile.userId;
 
-      // GoogleフォームURLとプリフィル用entry ID
-      const formBaseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc3nBZNBihvIxVSnIdXq7drGYbrPE8_iXGEw_Cid44LGBch8w/viewform";
-      const entryId = "<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>LINEログイン中...</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-</head>
-<body>
-  <p style="text-align:center; margin-top: 2em;">Googleフォームに移動しています...</p>
+      // デバッグ用：画面に表示
+      document.getElementById('status').innerText = "取得したLINE ID: " + userId;
 
-  <script>
-    async function main() {
-      // LIFFアプリの初期化（あなたのLIFF ID）
-      await liff.init({ liffId: "2007783477-4L19A7vA" });
-
-      // ログインしていなければログイン
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
-      }
-
-      // LINEユーザープロフィールを取得
-      const profile = await liff.getProfile();
-      const userId = profile.userId;
-
-      // GoogleフォームのベースURLとLINE ID項目のentry ID
+      // フォーム遷移（コメントアウトして一時停止）
+      /*
       const formBaseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc3nBZNBihvIxVSnIdXq7drGYbrPE8_iXGEw_Cid44LGBch8w/viewform";
       const entryId = "entry.1676225284";
-
-      // 完成したURLを生成して遷移
       const formUrl = `${formBaseUrl}?${entryId}=${encodeURIComponent(userId)}`;
       location.href = formUrl;
+      */
     }
 
     main().catch(err => {
-      document.body.innerHTML += `<p style="color:red;">エラーが発生しました：${err}</p>`;
-    });
-  </script>
-</body>
-</html>
-"; // ← LINE ID 項目のエントリーID
-
-      // URL生成して遷移
-      const prefillUrl = `${formBaseUrl}?${entryId}=${encodeURIComponent(userId)}`;
-      location.href = prefillUrl;
-    }
-
-    main().catch(err => {
-      document.body.innerHTML += `<p style="color:red;">エラーが発生しました：${err}</p>`;
+      document.getElementById('status').innerText = "エラー: " + err;
     });
   </script>
 </body>
